@@ -22,6 +22,9 @@
 #include "content/shell/common/shell_switches.h"
 #include "content/test/mock_background_sync_controller.h"
 
+#include "content/public/browser/push_messaging_service.h"
+#include "content/shell/browser/shell_push_messaging_service.h"
+
 #if defined(OS_WIN)
 #include "base/base_paths_win.h"
 #elif defined(OS_LINUX)
@@ -193,6 +196,9 @@ storage::SpecialStoragePolicy* ShellBrowserContext::GetSpecialStoragePolicy() {
 }
 
 PushMessagingService* ShellBrowserContext::GetPushMessagingService() {
+  if (!push_messaging_service_.get())
+    push_messaging_service_.reset(new ShellPushMessagingService());
+  return push_messaging_service_.get();
   return NULL;
 }
 

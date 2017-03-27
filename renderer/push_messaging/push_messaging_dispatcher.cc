@@ -49,6 +49,7 @@ void PushMessagingDispatcher::subscribe(
     blink::WebPushSubscriptionCallbacks* callbacks) {
   DCHECK(service_worker_registration);
   DCHECK(callbacks);
+  DLOG(WARNING) << __FILE__ << ":" << __LINE__ << "  " << __FUNCTION__;
   // If a developer provided an application server key in |options|, skip
   // fetching the manifest.
   if (options.applicationServerKey.isEmpty()) {

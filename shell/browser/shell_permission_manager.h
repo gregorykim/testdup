@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "content/public/browser/permission_manager.h"
 
+#include "content/browser/notifications/notification_database.h"
 namespace content {
 
 class ShellPermissionManager : public PermissionManager {
@@ -52,6 +53,19 @@ class ShellPermissionManager : public PermissionManager {
   void UnsubscribePermissionStatusChange(int subscription_id) override;
 
  private:
+
+  void LazyInitialize();
+  void OpenDatabase();
+  void ReadDBOnIO(const GURL& requesting_origin,
+       const base::Callback<void(blink::mojom::PermissionStatus)>& callback);
+  void WriteDBOnIO(const GURL& requesting_origin, bool permission);
+  void DestryDBOnIO();
+
+  base::FilePath path_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::unique_ptr<NotificationDatabase> database_;
+  std::map<std::string, int> notification_permission_vector_;
+
   DISALLOW_COPY_AND_ASSIGN(ShellPermissionManager);
 };
 

@@ -366,6 +366,18 @@ static_library("content_shell_lib") {
       "browser/shell_plugin_service_filter.h",
     ]
   }
+
+  #qnx
+
+  sources += [
+    "browser/shell_push_messaging_service.cc",
+    "browser/shell_push_messaging_service.h",
+    "browser/shell_pref_service.cc",
+    "browser/shell_pref_service.h",
+    "browser/shell_host_content_settings_map_factory.cc",
+    "browser/shell_host_content_settings_map_factory.h",
+  ]
+  deps += [ "//components/gcm_driver", "//components/keyed_service/content", "//components/syncable_prefs" ]
 }
 
 grit("content_shell_resources_grit") {

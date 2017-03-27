@@ -106,6 +106,7 @@ class ShellBrowserContext : public BrowserContext {
   bool ignore_certificate_errors_;
   std::unique_ptr<ShellDownloadManagerDelegate> download_manager_delegate_;
   std::unique_ptr<PermissionManager> permission_manager_;
+  std::unique_ptr<PushMessagingService> push_messaging_service_;
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
 
  private:

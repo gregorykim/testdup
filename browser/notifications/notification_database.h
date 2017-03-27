@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <set>
 #include <vector>
@@ -28,7 +29,7 @@ class WriteBatch;
 namespace content {
 
 struct NotificationDatabaseData;
-
+class NotificationPermissionData;
 // Implementation of the persistent notification database.
 //
 // The database is built on top of a LevelDB database, either in memory or on
@@ -141,6 +142,14 @@ class CONTENT_EXPORT NotificationDatabase {
       const GURL& origin,
       int64_t service_worker_registration_id,
       std::set<std::string>* deleted_notification_ids);
+
+  //QNX
+  Status ReadNotificationPermission(
+      std::map<std::string, int>* notification_data_vector) const;
+  Status WriteNotificationPermission(
+      const GURL& origin, bool& permission);
+  Status DeleteNotificationPermission(const std::string& notification_id,
+                                const GURL& origin);
 
   // Completely destroys the contents of this database.
   Status Destroy();
