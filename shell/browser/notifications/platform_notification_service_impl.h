@@ -17,13 +17,10 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string16.h"
-#include "content/shell/browser/notifications/notification.h"
-#include "content/shell/browser/notifications/notification_common.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/common/persistent_notification_status.h"
 #include "third_party/WebKit/public/platform/modules/permissions/permission_status.mojom.h"
 
-class NotificationDelegate;
 class NotificationDisplayService;
 class ScopedKeepAlive;
 
@@ -104,17 +101,6 @@ class PlatformNotificationServiceImpl
       content::PersistentNotificationStatus status);
   void OnCloseEventDispatchComplete(
       content::PersistentNotificationStatus status);
-
-  // Creates a new Web Notification-based Notification object.
-  // TODO(peter): |delegate| can be a scoped_refptr, but properly passing this
-  // through requires changing a whole lot of Notification constructor calls.
-  Notification CreateNotificationFromData(
-      std::string& profile,
-      const GURL& service_worker_scope,
-      const GURL& origin,
-      const content::PlatformNotificationData& notification_data,
-      const content::NotificationResources& notification_resources,
-      NotificationDelegate* delegate) const;
 
   // Returns a display name for an origin, to be used in the context message
   base::string16 DisplayNameForContextMessage(std::string& profile,

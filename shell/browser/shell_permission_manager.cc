@@ -13,7 +13,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
-#include "content/shell/browser/notifications/notification_permission_data.h"
 #include "content/shell/browser/shell_host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -145,12 +144,14 @@ int ShellPermissionManager::RequestPermissions(
 }
 
 void ShellPermissionManager::CancelPermissionRequest(int request_id) {
+  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
 }
 
 void ShellPermissionManager::ResetPermission(
     PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
+  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
 }
 
 blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
