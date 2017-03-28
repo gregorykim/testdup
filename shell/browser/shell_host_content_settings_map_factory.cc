@@ -11,22 +11,15 @@
 #include "components/prefs/pref_service.h"
 #include "components/syncable_prefs/pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/shell/browser/shell_browser_context.h"
+#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_pref_service.h"
 
 
-ShellHostContentSettingsMapFactory::ShellHostContentSettingsMapFactory() {
-  pref_service_.reset(ShellPrefService::Get());
-  // pref_service_ = ShellPrefService::Get();
-  settings_map_ = new HostContentSettingsMap(
-    pref_service_.get(),
-    false,
-    true);
-
-  // if (pref_service_) {
-    ShellPrefService::GetSyncable()->RegisterMergeDataFinishedCallback(
-        base::Bind(&HostContentSettingsMap::MigrateDomainScopedSettings,
-                   settings_map_->GetWeakPtr(), true /* after_sync */));
-  // }
+ShellHostContentSettingsMapFactory::ShellHostContentSettingsMapFactory()
+    : RefcountedBrowserContextKeyedServiceFactory(
+        "HostContentSettingsMap",
+        BrowserContextDependencyManager::GetInstance()) {
 }
 
 ShellHostContentSettingsMapFactory::~ShellHostContentSettingsMapFactory() {
@@ -36,10 +29,38 @@ ShellHostContentSettingsMapFactory::~ShellHostContentSettingsMapFactory() {
 HostContentSettingsMap* ShellHostContentSettingsMapFactory::Get() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  return GetInstance()->settings_map_.get();
+  content::ShellBrowserContext* context = content::ShellContentBrowserClient::Get()->browser_context();
+  return static_cast<HostContentSettingsMap*>(
+      GetInstance()->GetServiceForBrowserContext(context, true).get());
 }
 
 // static
 ShellHostContentSettingsMapFactory* ShellHostContentSettingsMapFactory::GetInstance() {
   return base::Singleton<ShellHostContentSettingsMapFactory>::get();
+}
+
+scoped_refptr<RefcountedKeyedService>
+    ShellHostContentSettingsMapFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  scoped_refptr<HostContentSettingsMap> settings_map(new HostContentSettingsMap(
+    ShellPrefService::Get(),
+    false,
+    true));
+
+  // syncable_prefs::PrefServiceSyncable* pref_service =
+  //     PrefServiceSyncableFromProfile(profile);
+  if (ShellPrefService::GetSyncable()) {
+    ShellPrefService::GetSyncable()->RegisterMergeDataFinishedCallback(
+        base::Bind(&HostContentSettingsMap::MigrateDomainScopedSettings,
+                   settings_map->GetWeakPtr(), true /* after_sync */));
+  }
+
+  return settings_map;
+}
+
+content::BrowserContext* ShellHostContentSettingsMapFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return context;
 }

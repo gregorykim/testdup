@@ -56,8 +56,7 @@ class ShellPermissionManager : public PermissionManager {
 
   void LazyInitialize();
   void OpenDatabase();
-  void ReadDBOnIO(const GURL& requesting_origin,
-       const base::Callback<void(blink::mojom::PermissionStatus)>& callback);
+  void ReadDBOnIO();
   void WriteDBOnIO(const GURL& requesting_origin, bool permission);
   void DestryDBOnIO();
 

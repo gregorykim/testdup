@@ -66,6 +66,8 @@
 #include "media/mojo/services/mojo_media_application_factory.h"  // nogncheck
 #endif
 
+#include "content/shell/browser/notifications/platform_notification_service_impl.h"
+
 namespace content {
 
 namespace {
@@ -368,6 +370,12 @@ bool ShellContentBrowserClient::PreSpawnRenderer(
   return true;
 }
 #endif  // OS_WIN
+
+PlatformNotificationService*
+    ShellContentBrowserClient::GetPlatformNotificationService() {
+  // QNX
+  return PlatformNotificationServiceImpl::GetInstance();
+}
 
 ShellBrowserContext* ShellContentBrowserClient::browser_context() {
   return shell_browser_main_parts_->browser_context();

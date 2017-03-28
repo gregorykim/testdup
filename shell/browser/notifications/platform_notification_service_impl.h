@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_IMPL_H_
-#define CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_IMPL_H_
+#ifndef CONTENT_SHELL_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_IMPL_H_
+#define CONTENT_SHELL_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_IMPL_H_
 
 #include <stdint.h>
 
@@ -17,8 +17,8 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string16.h"
-#include "content/browser/notifications/notification.h"
-#include "content/browser/notifications/notification_common.h"
+#include "content/shell/browser/notifications/notification.h"
+#include "content/shell/browser/notifications/notification_common.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/common/persistent_notification_status.h"
 #include "third_party/WebKit/public/platform/modules/permissions/permission_status.mojom.h"
@@ -146,4 +146,4 @@ class PlatformNotificationServiceImpl
   DISALLOW_COPY_AND_ASSIGN(PlatformNotificationServiceImpl);
 };
 
-#endif  // CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_IMPL_H_
+#endif  // CONTENT_SHELL_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_IMPL_H_

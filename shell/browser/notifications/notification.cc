@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/notifications/notification.h"
+#include "content/shell/browser/notifications/notification.h"
 
 Notification::Notification(
     message_center::NotificationType type,

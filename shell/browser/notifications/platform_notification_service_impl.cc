@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/notifications/platform_notification_service_impl.h"
+#include "content/shell/browser/notifications/platform_notification_service_impl.h"
 
 #include <utility>
 #include <vector>
@@ -15,7 +15,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
-#include "content/browser/notifications/notification_object_proxy.h"
+#include "content/shell/browser/notifications/notification_object_proxy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_notification_delegate.h"
@@ -32,6 +32,8 @@
 #include "ui/message_center/notifier_settings.h"
 #include "url/url_constants.h"
 
+#include "content/shell/browser/shell_host_content_settings_map_factory.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 using content::BrowserContext;
 using content::BrowserThread;
 using message_center::NotifierId;
@@ -110,9 +112,12 @@ PlatformNotificationServiceImpl::CheckPermissionOnIOThread(
     const GURL& origin,
     int render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " <<__FUNCTION__;
   // return browser_context->GetPermissionManager()->GetPermissionStatus(
   //     content::PermissionType::NOTIFICATIONS, origin, origin);
+  // ContentSetting setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
+  //             origin, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
+  //             std::string());
+  // DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " <<__FUNCTION__ << "setting:" << setting;
   return blink::mojom::PermissionStatus::GRANTED;
   // return blink::mojom::PermissionStatus::ASK;
 }

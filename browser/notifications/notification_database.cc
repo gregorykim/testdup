@@ -22,7 +22,6 @@
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 #include "url/gurl.h"
 
-#include "content/browser/notifications/notification_permission_data.h"
 // Notification LevelDB database schema (in alphabetized order)
 // =======================
 //

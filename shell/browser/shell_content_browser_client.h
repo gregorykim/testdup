@@ -79,6 +79,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   bool PreSpawnRenderer(sandbox::TargetPolicy* policy) override;
 #endif
 
+  PlatformNotificationService* GetPlatformNotificationService() override;
+
   ShellBrowserContext* browser_context();
   ShellBrowserContext* off_the_record_browser_context();
   ShellResourceDispatcherHostDelegate* resource_dispatcher_host_delegate() {

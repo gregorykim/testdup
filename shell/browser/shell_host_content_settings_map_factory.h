@@ -12,7 +12,8 @@
 
 class HostContentSettingsMap;
 
-class ShellHostContentSettingsMapFactory {
+class ShellHostContentSettingsMapFactory
+    : public RefcountedBrowserContextKeyedServiceFactory {
  public:
   static HostContentSettingsMap* Get();
   static ShellHostContentSettingsMapFactory* GetInstance();
@@ -21,10 +22,13 @@ class ShellHostContentSettingsMapFactory {
   friend struct base::DefaultSingletonTraits<ShellHostContentSettingsMapFactory>;
 
   ShellHostContentSettingsMapFactory();
-  ~ShellHostContentSettingsMapFactory();
+  ~ShellHostContentSettingsMapFactory() override;
 
-  std::unique_ptr<PrefService> pref_service_;
-  scoped_refptr<HostContentSettingsMap> settings_map_;
+  // RefcountedBrowserContextKeyedServiceFactory methods:
+  scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
 
   DISALLOW_COPY_AND_ASSIGN(ShellHostContentSettingsMapFactory);
 };

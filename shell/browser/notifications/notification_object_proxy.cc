@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/notifications/notification_object_proxy.h"
+#include "content/shell/browser/notifications/notification_object_proxy.h"
 
 #include <utility>
 
 #include "base/logging.h"
-#include "content/browser/notifications/platform_notification_service_impl.h"
+#include "content/shell/browser/notifications/platform_notification_service_impl.h"
 #include "content/public/browser/desktop_notification_delegate.h"
 #include "url/gurl.h"
 

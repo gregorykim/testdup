@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NOTIFICATIONS_NOTIFICATION_H_
-#define CONTENT_BROWSER_NOTIFICATIONS_NOTIFICATION_H_
+#ifndef CONTENT_SHELL_BROWSER_NOTIFICATIONS_NOTIFICATION_H_
+#define CONTENT_SHELL_BROWSER_NOTIFICATIONS_NOTIFICATION_H_
 
 #include <memory>
 #include <string>
 
 #include "base/strings/string16.h"
 #include "base/values.h"
-#include "content/browser/notifications/notification_delegate.h"
+#include "content/shell/browser/notifications/notification_delegate.h"
 #include "ui/message_center/notification.h"
 #include "ui/message_center/notification_types.h"
 #include "url/gurl.h"
@@ -66,4 +66,4 @@ class Notification : public message_center::Notification {
   scoped_refptr<NotificationDelegate> delegate_;
 };
 
-#endif  // CONTENT_BROWSER_NOTIFICATIONS_NOTIFICATION_H_
+#endif  // CONTENT_SHELL_BROWSER_NOTIFICATIONS_NOTIFICATION_H_

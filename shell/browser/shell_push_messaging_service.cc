@@ -173,19 +173,19 @@ DLOG(WARNING) << "~~~~~~~~~~~~~~~ShellPushMessagingService create !!";
   //   pref_service->RegisterMergeDataFinishedCallback(
   //       base::Bind(&HostContentSettingsMap::MigrateDomainScopedSettings,
   //                  settings_map_->GetWeakPtr(), true /* after_sync */));
-  GURL host("https://mail.google.com");
-  ContentSetting setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
-            host, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-      std::string());
-  DLOG(WARNING) << "!!! setting : " << setting;
-  ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
-            host, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-      std::string(), CONTENT_SETTING_ALLOW);
-  // settings_map_->FlushLossyWebsiteSettings();
-  setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
-            host, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-      std::string());
-  DLOG(WARNING) << "!!! setting 2 : " << setting;
+  // GURL host("https://mail.google.com");
+  // ContentSetting setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
+  //           host, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
+  //     std::string());
+  // DLOG(WARNING) << "!!! setting : " << setting;
+  // ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
+  //           host, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
+  //     std::string(), CONTENT_SETTING_ALLOW);
+  // // settings_map_->FlushLossyWebsiteSettings();
+  // setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
+  //           host, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
+  //     std::string());
+  // DLOG(WARNING) << "!!! setting 2 : " << setting;
   // settings_map_->ShutdownOnUIThread();
   // content::BrowserThread::PostTask(
   //     content::BrowserThread::IO, FROM_HERE,

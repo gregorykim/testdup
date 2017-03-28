@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NOTIFICATIONS_NOTIFICATION_OBJECT_PROXY_H_
-#define CONTENT_BROWSER_NOTIFICATIONS_NOTIFICATION_OBJECT_PROXY_H_
+#ifndef CONTENT_SHELL_BROWSER_NOTIFICATIONS_NOTIFICATION_OBJECT_PROXY_H_
+#define CONTENT_SHELL_BROWSER_NOTIFICATIONS_NOTIFICATION_OBJECT_PROXY_H_
 
 #include <memory>
 #include <string>
 
 #include "base/macros.h"
-#include "content/browser/notifications/web_notification_delegate.h"
+#include "content/shell/browser/notifications/web_notification_delegate.h"
 
 class GURL;
 
@@ -48,4 +48,4 @@ class NotificationObjectProxy : public WebNotificationDelegate {
   DISALLOW_COPY_AND_ASSIGN(NotificationObjectProxy);
 };
 
-#endif  // CONTENT_BROWSER_NOTIFICATIONS_NOTIFICATION_OBJECT_PROXY_H_
+#endif  // CONTENT_SHELL_BROWSER_NOTIFICATIONS_NOTIFICATION_OBJECT_PROXY_H_

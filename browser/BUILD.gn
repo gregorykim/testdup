@@ -1382,21 +1382,6 @@ source_set("browser") {
     "zygote_host/zygote_host_impl_linux.h",
   ]
 
-  # QNX
-  sources += [
-    "notifications/notification.cc",
-    "notifications/notification.h",
-    "notifications/notification_common.cc",
-    "notifications/notification_common.h",
-    "notifications/notification_object_proxy.cc",
-    "notifications/notification_object_proxy.h",
-    "notifications/platform_notification_service_impl.cc",
-    "notifications/platform_notification_service_impl.h",
-    "notifications/web_notification_delegate.cc",
-    "notifications/web_notification_delegate.h",
-  ]
-  deps += [ "//ui/message_center", ]
-
   if (toolkit_views) {
     deps += [ "//ui/events" ]
   }

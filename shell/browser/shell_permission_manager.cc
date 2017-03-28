@@ -13,7 +13,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
-#include "content/browser/notifications/notification_permission_data.h"
+#include "content/shell/browser/notifications/notification_permission_data.h"
+#include "content/shell/browser/shell_host_content_settings_map_factory.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 namespace content {
 
 namespace {
@@ -59,18 +61,18 @@ void ShellPermissionManager::OpenDatabase() {
     database_.reset(new NotificationDatabase(path_));
     status = database_->Open(true /* create_if_missing */);
   }
+  ReadDBOnIO();
 }
 
-void ShellPermissionManager::ReadDBOnIO(const GURL& requesting_origin,
-     const base::Callback<void(blink::mojom::PermissionStatus)>& callback) {
+void ShellPermissionManager::ReadDBOnIO() {
 
   NotificationDatabase::Status status;
-  // if (database_ == NULL) {
-  //   database_.reset(new NotificationDatabase(path_));
-  //   status = database_->Open(true /* create_if_missing */);
-  // }
-  // std::vector<NotificationPermissionData> notification_permission_vector;
   status = database_->ReadNotificationPermission(&notification_permission_vector_);
+  // for(auto &permission : notification_permission_vector_) {
+  //   ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
+  //             GURL(permission.first), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
+  //             std::string(), permission.second == 1? CONTENT_SETTING_ALLOW: CONTENT_SETTING_BLOCK);
+  // }
 }
 
 void ShellPermissionManager::WriteDBOnIO(const GURL& requesting_origin, bool permission) {
@@ -104,6 +106,9 @@ int ShellPermissionManager::RequestPermission(
     // task_runner_->PostTask(FROM_HERE,
     //     base::Bind(&ShellPermissionManager::WriteDBOnIO, base::Unretained(this), requesting_origin, true));
 
+    task_runner_->PostTask(
+        FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
+                              base::Unretained(this), requesting_origin, true/*permission*/));
     callback.Run(blink::mojom::PermissionStatus::GRANTED);
   }
   else {

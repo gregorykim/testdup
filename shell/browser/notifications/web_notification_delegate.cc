@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/notifications/web_notification_delegate.h"
+#include "content/shell/browser/notifications/web_notification_delegate.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "content/browser/notifications/notification_common.h"
+#include "content/shell/browser/notifications/notification_common.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/message_center/notifier_settings.h"
 
