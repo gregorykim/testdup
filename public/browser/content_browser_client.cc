@@ -16,9 +16,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
-  // QNX
-#include "content/browser/notifications/platform_notification_service_impl.h"
-
 namespace content {
 
 BrowserMainParts* ContentBrowserClient::CreateBrowserMainParts(
@@ -273,8 +270,6 @@ MediaObserver* ContentBrowserClient::GetMediaObserver() {
 
 PlatformNotificationService*
 ContentBrowserClient::GetPlatformNotificationService() {
-  // QNX
-  return PlatformNotificationServiceImpl::GetInstance();
   return nullptr;
 }
 
