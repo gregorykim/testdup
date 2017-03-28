@@ -92,11 +92,6 @@ PrefService* ShellPrefService::Get() {
   return GetInstance()->prefs_.get();
 }
 
-// HostContentSettingsMap* ShellPrefService::GetHostContentSettingsMapFactory() {
-//   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
-//   return GetInstance()->settings_map_.get();
-// }
 // static
 syncable_prefs::PrefServiceSyncable* ShellPrefService::GetSyncable() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));

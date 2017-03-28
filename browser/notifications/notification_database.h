@@ -147,7 +147,7 @@ class CONTENT_EXPORT NotificationDatabase {
   Status ReadNotificationPermission(
       std::map<std::string, int>* notification_data_vector) const;
   Status WriteNotificationPermission(
-      const GURL& origin, bool& permission);
+      const GURL& origin, int& permission);
   Status DeleteNotificationPermission(const std::string& notification_id,
                                 const GURL& origin);
 

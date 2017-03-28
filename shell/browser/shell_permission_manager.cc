@@ -16,6 +16,7 @@
 #include "content/shell/browser/notifications/notification_permission_data.h"
 #include "content/shell/browser/shell_host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 namespace content {
 
 namespace {
@@ -23,7 +24,7 @@ namespace {
 bool IsWhitelistedPermissionType(PermissionType permission) {
   DLOG(WARNING) << __FILE__ <<":"<<__LINE__;
   return permission == PermissionType::GEOLOCATION ||
-          permission == PermissionType::PUSH_MESSAGING ||
+         permission == PermissionType::PUSH_MESSAGING ||
          permission == PermissionType::MIDI;
 }
 
@@ -65,27 +66,26 @@ void ShellPermissionManager::OpenDatabase() {
 }
 
 void ShellPermissionManager::ReadDBOnIO() {
-
   NotificationDatabase::Status status;
   status = database_->ReadNotificationPermission(&notification_permission_vector_);
-  // for(auto &permission : notification_permission_vector_) {
-  //   ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
-  //             GURL(permission.first), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-  //             std::string(), permission.second == 1? CONTENT_SETTING_ALLOW: CONTENT_SETTING_BLOCK);
-  // }
+  BrowserThread::PostTask(
+      BrowserThread::UI, FROM_HERE,
+      base::Bind(&ShellPermissionManager::ReadDBOnUI, base::Unretained(this)));
 }
 
-void ShellPermissionManager::WriteDBOnIO(const GURL& requesting_origin, bool permission) {
-  NotificationDatabase::Status status;
-  // if (database_ == NULL) {
-  //   database_.reset(new NotificationDatabase(path_));
-  //   status = database_->Open(true /* create_if_missing */);
-  // }
-  status = database_->WriteNotificationPermission(requesting_origin, permission);
+void ShellPermissionManager::ReadDBOnUI() {
+  for(auto &permission : notification_permission_vector_) {
+    base::FundamentalValue int_value(permission.second);
+    ContentSetting s = content_settings::ValueToContentSetting(&int_value);
+    ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
+              GURL(permission.first), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
+              std::string(), s);
+  }
+}
 
-  // callback.Run(IsWhitelistedPermissionType(permission)
-  //                  ? blink::mojom::PermissionStatus::GRANTED
-  //                  : blink::mojom::PermissionStatus::DENIED);
+void ShellPermissionManager::WriteDBOnIO(const GURL& requesting_origin, int permission) {
+  NotificationDatabase::Status status;
+  status = database_->WriteNotificationPermission(requesting_origin, permission);
 }
 
 void ShellPermissionManager::DestryDBOnIO() {
@@ -103,12 +103,20 @@ int ShellPermissionManager::RequestPermission(
     const base::Callback<void(blink::mojom::PermissionStatus)>& callback) {
   DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
   if (permission == PermissionType::NOTIFICATIONS) {
-    // task_runner_->PostTask(FROM_HERE,
-    //     base::Bind(&ShellPermissionManager::WriteDBOnIO, base::Unretained(this), requesting_origin, true));
+    // need to popup
 
+    // set content setting map
+    std::unique_ptr<base::Value> value = content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW);
+    ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
+              GURL(permission.first), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
+              std::string(), CONTENT_SETTING_ALLOW);
+    int v;
+    value->GetAsInteger(&v);
+
+    // write db
     task_runner_->PostTask(
         FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
-                              base::Unretained(this), requesting_origin, true/*permission*/));
+                              base::Unretained(this), requesting_origin, v));
     callback.Run(blink::mojom::PermissionStatus::GRANTED);
   }
   else {

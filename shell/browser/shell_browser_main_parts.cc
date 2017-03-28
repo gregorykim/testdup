@@ -54,6 +54,9 @@
 #include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"
 #endif
 
+#include "content/shell/browser/shell_host_content_settings_map_factory.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+
 namespace content {
 
 namespace {
@@ -200,6 +203,7 @@ bool ShellBrowserMainParts::MainMessageLoopRun(int* result_code)  {
 
 void ShellBrowserMainParts::PostMainMessageLoopRun() {
   ShellDevToolsManagerDelegate::StopHttpHandler();
+  ShellHostContentSettingsMapFactory::Get()->ShutdownOnUIThread();
   browser_context_.reset();
   off_the_record_browser_context_.reset();
 }

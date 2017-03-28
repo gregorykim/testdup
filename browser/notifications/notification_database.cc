@@ -288,7 +288,7 @@ NotificationDatabase::ReadNotificationPermission(
 
 NotificationDatabase::Status
 NotificationDatabase::WriteNotificationPermission(
-      const GURL& origin, bool& permission) {
+      const GURL& origin, int& permission) {
   NOTIMPLEMENTED();
 
   leveldb::WriteBatch batch;

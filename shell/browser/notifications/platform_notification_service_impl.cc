@@ -114,10 +114,10 @@ PlatformNotificationServiceImpl::CheckPermissionOnIOThread(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // return browser_context->GetPermissionManager()->GetPermissionStatus(
   //     content::PermissionType::NOTIFICATIONS, origin, origin);
-  // ContentSetting setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
-  //             origin, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-  //             std::string());
-  // DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " <<__FUNCTION__ << "setting:" << setting;
+  ContentSetting setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
+              origin, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
+              std::string());
+  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " <<__FUNCTION__ << "setting:" << setting;
   return blink::mojom::PermissionStatus::GRANTED;
   // return blink::mojom::PermissionStatus::ASK;
 }

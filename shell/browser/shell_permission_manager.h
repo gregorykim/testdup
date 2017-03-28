@@ -57,7 +57,8 @@ class ShellPermissionManager : public PermissionManager {
   void LazyInitialize();
   void OpenDatabase();
   void ReadDBOnIO();
-  void WriteDBOnIO(const GURL& requesting_origin, bool permission);
+  void ReadDBOnUI();
+  void WriteDBOnIO(const GURL& requesting_origin, int permission);
   void DestryDBOnIO();
 
   base::FilePath path_;
