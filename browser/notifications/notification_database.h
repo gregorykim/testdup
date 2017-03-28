@@ -145,9 +145,9 @@ class CONTENT_EXPORT NotificationDatabase {
 
   //QNX
   Status ReadNotificationPermission(
-      std::map<std::string, int>* notification_data_vector) const;
+      std::map<std::string, std::string>* notification_data_vector) const;
   Status WriteNotificationPermission(
-      const GURL& origin, int& permission);
+      const GURL& origin, std::string& permission);
   Status DeleteNotificationPermission(const std::string& notification_id,
                                 const GURL& origin);
 

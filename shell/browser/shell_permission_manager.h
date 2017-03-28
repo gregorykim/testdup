@@ -58,13 +58,13 @@ class ShellPermissionManager : public PermissionManager {
   void OpenDatabase();
   void ReadDBOnIO();
   void ReadDBOnUI();
-  void WriteDBOnIO(const GURL& requesting_origin, int permission);
+  void WriteDBOnIO(const GURL& requesting_origin, std::string permission);
   void DestryDBOnIO();
 
   base::FilePath path_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<NotificationDatabase> database_;
-  std::map<std::string, int> notification_permission_vector_;
+  std::map<std::string, std::string> notification_permission_vector_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellPermissionManager);
 };

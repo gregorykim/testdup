@@ -75,15 +75,15 @@ void ShellPermissionManager::ReadDBOnIO() {
 
 void ShellPermissionManager::ReadDBOnUI() {
   for(auto &permission : notification_permission_vector_) {
-    base::FundamentalValue int_value(permission.second);
-    ContentSetting s = content_settings::ValueToContentSetting(&int_value);
+    ContentSetting setting;
+    content_settings::ContentSettingFromString(permission.second, &setting);
     ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
               GURL(permission.first), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-              std::string(), s);
+              std::string(), setting);
   }
 }
 
-void ShellPermissionManager::WriteDBOnIO(const GURL& requesting_origin, int permission) {
+void ShellPermissionManager::WriteDBOnIO(const GURL& requesting_origin, std::string permission) {
   NotificationDatabase::Status status;
   status = database_->WriteNotificationPermission(requesting_origin, permission);
 }
@@ -105,18 +105,17 @@ int ShellPermissionManager::RequestPermission(
   if (permission == PermissionType::NOTIFICATIONS) {
     // need to popup
 
+    ContentSetting dummy_result = CONTENT_SETTING_ALLOW;
     // set content setting map
-    std::unique_ptr<base::Value> value = content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW);
     ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
-              GURL(permission.first), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-              std::string(), CONTENT_SETTING_ALLOW);
-    int v;
-    value->GetAsInteger(&v);
+              GURL(requesting_origin), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
+              std::string(), dummy_result);
 
+    std::string setting_str = content_settings::ContentSettingToString(dummy_result);
     // write db
     task_runner_->PostTask(
         FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
-                              base::Unretained(this), requesting_origin, v));
+                              base::Unretained(this), requesting_origin, setting_str));
     callback.Run(blink::mojom::PermissionStatus::GRANTED);
   }
   else {

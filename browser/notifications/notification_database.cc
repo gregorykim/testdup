@@ -257,7 +257,7 @@ NotificationDatabase::DeleteAllNotificationDataForServiceWorkerRegistration(
 
 NotificationDatabase::Status
 NotificationDatabase::ReadNotificationPermission(
-      std::map<std::string, int>* notification_data_vector) const {
+      std::map<std::string, std::string>* notification_data_vector) const {
   NOTIMPLEMENTED();
   // std::string key = CreateDataPrefix(origin);
   // std::string value;
@@ -274,12 +274,12 @@ NotificationDatabase::ReadNotificationPermission(
       db_->NewIterator(leveldb::ReadOptions()));
   for (iter->SeekToFirst(); iter->Valid(); iter->Next()) {
     std::string key = iter->key().data();
-    int permission = 0;
-    base::StringToInt(iter->value().ToString(), &permission);
+    // int permission = 0;
+    // base::StringToInt(iter->value().ToString(), &permission);
     DLOG(WARNING) << "iter->key().data() " << iter->key().data();
     DLOG(WARNING) << "iter->value().ToString() " << iter->value().ToString();
     // notification_data_vector[key] = permission;
-    notification_data_vector->insert(std::pair<std::string,int>(key, permission));
+    notification_data_vector->insert(std::pair<std::string, std::string>(key, iter->value().ToString()));
 
     // notification_data_vector->push_back(notification_database_data);
   }
@@ -288,11 +288,11 @@ NotificationDatabase::ReadNotificationPermission(
 
 NotificationDatabase::Status
 NotificationDatabase::WriteNotificationPermission(
-      const GURL& origin, int& permission) {
+      const GURL& origin, std::string& permission) {
   NOTIMPLEMENTED();
 
   leveldb::WriteBatch batch;
-  batch.Put(CreateDataPrefix(origin), base::IntToString(permission));
+  batch.Put(CreateDataPrefix(origin), permission);
 
   return LevelDBStatusToStatus(db_->Write(leveldb::WriteOptions(), &batch));
 }

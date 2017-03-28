@@ -117,9 +117,16 @@ PlatformNotificationServiceImpl::CheckPermissionOnIOThread(
   ContentSetting setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
               origin, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
               std::string());
-  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " <<__FUNCTION__ << "setting:" << setting;
-  return blink::mojom::PermissionStatus::GRANTED;
-  // return blink::mojom::PermissionStatus::ASK;
+  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " <<__FUNCTION__ << " setting: " << setting;
+  switch(setting) {
+    case CONTENT_SETTING_ALLOW:
+      return blink::mojom::PermissionStatus::GRANTED;
+    case CONTENT_SETTING_BLOCK:
+      return blink::mojom::PermissionStatus::DENIED;
+    default:
+      break;
+  }
+  return blink::mojom::PermissionStatus::ASK;
 }
 
 void PlatformNotificationServiceImpl::DisplayNotification(

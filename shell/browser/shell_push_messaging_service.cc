@@ -138,17 +138,6 @@ DLOG(WARNING) << "~~~~~~~~~~~~~~~ShellPushMessagingService create !!";
       content::BrowserContext::GetDefaultStoragePartition(context)->
               GetURLRequestContext();
   std::string product_category_for_subtypes = "com.chrome.qnx";
-  // std::string channel = "http://channel.status.request.url";
-
-  // scoped_refptr<PrefRegistrySimple> registry(new PrefRegistrySimple);
-  // registry->RegisterBooleanPref(kGCMChannelStatus, true);
-  // registry->RegisterIntegerPref(kGCMChannelPollIntervalSeconds, kDefaultPollIntervalSeconds);
-  // registry->RegisterInt64Pref(kGCMChannelLastCheckTime, 0);
-  // PrefServiceFactory factory;
-  // path = path.Append("Prefs");
-  // factory.SetUserPrefsFile(path, blocking_task_runner.get());
-  // base::ThreadRestrictions::SetIOAllowed(true);
-  // prefs_ = factory.Create(registry.get());
   prefs_.reset(ShellPrefService::Get());
 
   driver_ = gcm::CreateGCMDriverDesktop(
@@ -162,34 +151,6 @@ DLOG(WARNING) << "~~~~~~~~~~~~~~~ShellPushMessagingService create !!";
       blocking_task_runner);
   base::ThreadRestrictions::SetIOAllowed(false);
 
-  // scoped_refptr<HostContentSettingsMap> settings_map_;
-  // settings_map_ = new HostContentSettingsMap(
-  //   prefs_.get(),
-  //   false,
-  //   true);
-
-  // syncable_prefs::PrefServiceSyncable* pref_service =
-  //     ShellPrefService::GetSyncable();
-  //   pref_service->RegisterMergeDataFinishedCallback(
-  //       base::Bind(&HostContentSettingsMap::MigrateDomainScopedSettings,
-  //                  settings_map_->GetWeakPtr(), true /* after_sync */));
-  // GURL host("https://mail.google.com");
-  // ContentSetting setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
-  //           host, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-  //     std::string());
-  // DLOG(WARNING) << "!!! setting : " << setting;
-  // ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
-  //           host, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-  //     std::string(), CONTENT_SETTING_ALLOW);
-  // // settings_map_->FlushLossyWebsiteSettings();
-  // setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
-  //           host, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-  //     std::string());
-  // DLOG(WARNING) << "!!! setting 2 : " << setting;
-  // settings_map_->ShutdownOnUIThread();
-  // content::BrowserThread::PostTask(
-  //     content::BrowserThread::IO, FROM_HERE,
-  //     base::Bind(&ShellPushMessagingService::CreateGCMOnIO, base::Unretained(this)));
 }
 
 ShellPushMessagingService::~ShellPushMessagingService() {
@@ -230,7 +191,7 @@ void ShellPushMessagingService::OnMessage(const std::string& app_id,
   notification_data.tag = kPushMessagingForcedNotificationTag;
   notification_data.icon = GURL();
   notification_data.silent = true;
-
+  // How to send message?
   content::ShellContentBrowserClient::Get()->GetPlatformNotificationService()->DisplayPersistentNotification(
       content::ShellContentBrowserClient::Get()->browser_context(), app_id, GURL() /* service_worker_scope */, GURL(),
       notification_data, content::NotificationResources());
