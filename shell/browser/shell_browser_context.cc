@@ -198,7 +198,6 @@ storage::SpecialStoragePolicy* ShellBrowserContext::GetSpecialStoragePolicy() {
 }
 
 PushMessagingService* ShellBrowserContext::GetPushMessagingService() {
-  ShellHostContentSettingsMapFactory::Get();
   if (!push_messaging_service_.get())
     push_messaging_service_.reset(new ShellPushMessagingService());
   return push_messaging_service_.get();

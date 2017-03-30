@@ -289,10 +289,9 @@ NotificationDatabase::ReadNotificationPermission(
 NotificationDatabase::Status
 NotificationDatabase::WriteNotificationPermission(
       const GURL& origin, std::string& permission) {
-  NOTIMPLEMENTED();
 
   leveldb::WriteBatch batch;
-  batch.Put(CreateDataPrefix(origin), permission);
+  batch.Put(origin.spec(), permission);
 
   return LevelDBStatusToStatus(db_->Write(leveldb::WriteOptions(), &batch));
 }

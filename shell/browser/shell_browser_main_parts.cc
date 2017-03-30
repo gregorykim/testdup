@@ -190,6 +190,10 @@ void ShellBrowserMainParts::PreMainMessageLoopRun() {
   ShellDevToolsManagerDelegate::StartHttpHandler(browser_context_.get());
   InitializeMessageLoopContext();
 
+  // Init PermissionManager, ShellHostContentSettingsMapFactory
+  ShellHostContentSettingsMapFactory::Get();
+  browser_context_->GetPermissionManager();
+
   if (parameters_.ui_task) {
     parameters_.ui_task->Run();
     delete parameters_.ui_task;
@@ -203,7 +207,10 @@ bool ShellBrowserMainParts::MainMessageLoopRun(int* result_code)  {
 
 void ShellBrowserMainParts::PostMainMessageLoopRun() {
   ShellDevToolsManagerDelegate::StopHttpHandler();
+
+  // Destroy ShellHostContentSettingsMapFactory
   ShellHostContentSettingsMapFactory::Get()->ShutdownOnUIThread();
+
   browser_context_.reset();
   off_the_record_browser_context_.reset();
 }
