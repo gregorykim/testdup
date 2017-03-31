@@ -30,6 +30,8 @@
 
 #include "content/shell/browser/shell_host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/shell/browser/notifications/web_push_content_views.h"
+
 using content::BrowserContext;
 using content::BrowserThread;
 
@@ -132,10 +134,22 @@ void PlatformNotificationServiceImpl::DisplayNotification(
     const content::NotificationResources& notification_resources,
     std::unique_ptr<content::DesktopNotificationDelegate> delegate,
     base::Closure* cancel_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+
+	WebPushView::Notification noti(NOTIFICATION_TYPE_SIMPLE,///type
+					  "",///id
+					  notification_data.title,//title
+					  base::ASCIIToUTF16(notification_data.lang.c_str()),//message
+					  gfx::Image(),///icon
+					  notification_data.body,//display source
+					  GURL(notification_data.tag),//orignal url
+					  0);
+
+    WebPushView::WebPushViewRequest* req = new WebPushView::WebPushViewRequest(notification_data.title,notification_data.body);
+    req->DisplayWebPush();
   DLOG(WARNING) << "DisplayNotification notification_data.title : " << notification_data.title;
   DLOG(WARNING) << "notification_data.body : " << notification_data.body;
-  NOTIMPLEMENTED();
 }
 
 void PlatformNotificationServiceImpl::DisplayPersistentNotification(

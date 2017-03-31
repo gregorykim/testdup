@@ -10,9 +10,12 @@
 #include "content/public/browser/permission_manager.h"
 
 #include "content/browser/notifications/notification_database.h"
+#include "content/shell/browser/notifications/permission_prompt_impl.h"
+
 namespace content {
 
-class ShellPermissionManager : public PermissionManager {
+class ShellPermissionManager : public PermissionManager ,
+										Permission_prompt::Delegate {
  public:
   ShellPermissionManager();
   ~ShellPermissionManager() override;
@@ -52,6 +55,15 @@ class ShellPermissionManager : public PermissionManager {
       override;
   void UnsubscribePermissionStatusChange(int subscription_id) override;
 
+///delegate
+  void Accept(const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
+                                         const GURL req_url) override;
+  void Deny(const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
+                                         const GURL req_url) override;
+  void Closing() override;
+
+
+
  private:
 
   void LazyInitialize();
@@ -61,8 +73,12 @@ class ShellPermissionManager : public PermissionManager {
   void WriteDBOnIO(const GURL& requesting_origin, std::string permission);
   void DestryDBOnIO();
 
+
+
   base::FilePath path_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  std::unique_ptr<Permission_prompt::PermissionPromptImpl> ask_popup_;
   std::unique_ptr<NotificationDatabase> database_;
   std::map<std::string, std::string> notification_permission_vector_;
 

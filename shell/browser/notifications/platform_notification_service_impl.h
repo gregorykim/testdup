@@ -21,6 +21,9 @@
 #include "content/public/common/persistent_notification_status.h"
 #include "third_party/WebKit/public/platform/modules/permissions/permission_status.mojom.h"
 
+#include "content/shell/browser/notifications/notification.h"
+#include "content/shell/browser/notifications/web_push_content_views.h"
+
 class NotificationDisplayService;
 class ScopedKeepAlive;
 
@@ -128,6 +131,7 @@ class PlatformNotificationServiceImpl
   // Tracks the id of persistent notifications that have been closed
   // programmatically to avoid dispatching close events for them.
   std::unordered_set<std::string> closed_notifications_;
+  std::unique_ptr<WebPushView::WebPushContentViews> web_push_popup_view_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformNotificationServiceImpl);
 };

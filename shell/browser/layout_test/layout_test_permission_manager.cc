@@ -93,11 +93,9 @@ int LayoutTestPermissionManager::RequestPermissions(
     result.push_back(GetPermissionStatus(
         permission, requesting_origin, embedding_origin));
   }
-
   callback.Run(result);
   return kNoPendingOperation;
 }
-
 void LayoutTestPermissionManager::CancelPermissionRequest(int request_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }

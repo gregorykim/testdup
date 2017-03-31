@@ -16,6 +16,7 @@
 #include "content/shell/browser/shell_host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+
 namespace content {
 
 namespace {
@@ -94,6 +95,52 @@ void ShellPermissionManager::DestryDBOnIO() {
   }
 }
 
+
+void ShellPermissionManager::Accept(const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
+									   const GURL req_url)
+{
+    DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
+#if 1
+    ContentSetting dummy_result = CONTENT_SETTING_ALLOW;
+    // set content setting map
+    ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
+              GURL(req_url), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+              std::string(), dummy_result);
+
+    std::string setting_str = content_settings::ContentSettingToString(dummy_result);
+    // write db
+    task_runner_->PostTask(
+        FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
+                              base::Unretained(this), req_url, setting_str));
+    callback.Run(blink::mojom::PermissionStatus::GRANTED);
+#endif
+}
+void ShellPermissionManager::Deny(const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
+									 const GURL req_url)
+{
+#if 1
+    ContentSetting dummy_result = CONTENT_SETTING_BLOCK;
+    // set content setting map
+    ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
+              GURL(req_url), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+              std::string(), dummy_result);
+
+    std::string setting_str = content_settings::ContentSettingToString(dummy_result);
+    // write db
+    task_runner_->PostTask(
+        FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
+                              base::Unretained(this), req_url, setting_str));
+    callback.Run(blink::mojom::PermissionStatus::DENIED);
+#endif
+}
+
+void ShellPermissionManager::Closing()
+{
+    DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
+}
+
+
+
 int ShellPermissionManager::RequestPermission(
     PermissionType permission,
     RenderFrameHost* render_frame_host,
@@ -101,21 +148,21 @@ int ShellPermissionManager::RequestPermission(
     bool user_gesture,
     const base::Callback<void(blink::mojom::PermissionStatus)>& callback) {
   DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
+#if 0
+return RequestPermissions(
+    std::vector<PermissionType>(1, permission),
+    render_frame_host,
+    requesting_origin,
+    user_gesture,
+    base::Bind(&PermissionRequestResponseCallbackWrapper, callback));
+#else
   if (permission == PermissionType::NOTIFICATIONS) {
     // need to popup
-
-    ContentSetting dummy_result = CONTENT_SETTING_ALLOW;
-    // set content setting map
-    ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
-              GURL(requesting_origin), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-              std::string(), dummy_result);
-
-    std::string setting_str = content_settings::ContentSettingToString(dummy_result);
-    // write db
-    task_runner_->PostTask(
-        FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
-                              base::Unretained(this), requesting_origin, setting_str));
-    callback.Run(blink::mojom::PermissionStatus::GRANTED);
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+	const std::vector<bool> tmp;
+    ask_popup_.reset(new Permission_prompt::PermissionPromptImpl(this,requesting_origin,callback,web_contents));
+    ask_popup_->Show(tmp);
   }
   else {
     callback.Run(IsWhitelistedPermissionType(permission)
@@ -123,6 +170,7 @@ int ShellPermissionManager::RequestPermission(
                      : blink::mojom::PermissionStatus::DENIED);
   }
   return kNoPendingOperation;
+#endif
 }
 
 int ShellPermissionManager::RequestPermissions(
@@ -132,6 +180,7 @@ int ShellPermissionManager::RequestPermissions(
     bool user_gesture,
     const base::Callback<
         void(const std::vector<blink::mojom::PermissionStatus>&)>& callback) {
+
   DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
   std::vector<blink::mojom::PermissionStatus> result(permissions.size());
   for (const auto& permission : permissions) {
