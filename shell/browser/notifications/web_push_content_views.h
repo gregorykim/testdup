@@ -8,29 +8,26 @@
 #include <string>
 #include <vector>
 
-
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "build/build_config.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
+#include "content/shell/browser/notifications/notification.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/message_center/views/message_center_controller.h"
-#include "ui/views/widget/widget_delegate.h"
-
-#include "base/observer_list.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/shell/browser/notifications/notification.h"
-
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_listener.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -41,11 +38,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-
-
-#include "build/build_config.h"
-
-#include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget_delegate.h"
 
 #include "content/public/browser/desktop_notification_delegate.h"
 

@@ -255,56 +255,6 @@ NotificationDatabase::DeleteAllNotificationDataForServiceWorkerRegistration(
                                            deleted_notification_ids);
 }
 
-NotificationDatabase::Status
-NotificationDatabase::ReadNotificationPermission(
-      std::map<std::string, std::string>* notification_data_vector) const {
-  NOTIMPLEMENTED();
-  // std::string key = CreateDataPrefix(origin);
-  // std::string value;
-  // int output = 0;
-  // Status status = LevelDBStatusToStatus(
-  //     db_->Get(leveldb::ReadOptions(), key, &value));
-  // if (status == STATUS_OK) {
-  //   base::StringToInt(value, &output);
-  //   permission = output;
-  // }
-  // return status;
-
-  std::unique_ptr<leveldb::Iterator> iter(
-      db_->NewIterator(leveldb::ReadOptions()));
-  for (iter->SeekToFirst(); iter->Valid(); iter->Next()) {
-    std::string key = iter->key().data();
-    // int permission = 0;
-    // base::StringToInt(iter->value().ToString(), &permission);
-    DLOG(WARNING) << "iter->key().data() " << iter->key().data();
-    DLOG(WARNING) << "iter->value().ToString() " << iter->value().ToString();
-    // notification_data_vector[key] = permission;
-    notification_data_vector->insert(std::pair<std::string, std::string>(key, iter->value().ToString()));
-
-    // notification_data_vector->push_back(notification_database_data);
-  }
-  return LevelDBStatusToStatus(iter->status());
-}
-
-NotificationDatabase::Status
-NotificationDatabase::WriteNotificationPermission(
-      const GURL& origin, std::string& permission) {
-
-  leveldb::WriteBatch batch;
-  batch.Put(origin.spec(), permission);
-
-  return LevelDBStatusToStatus(db_->Write(leveldb::WriteOptions(), &batch));
-}
-
-NotificationDatabase::Status
-NotificationDatabase::DeleteNotificationPermission(const std::string& notification_id,
-                                const GURL& origin) {
-  NOTIMPLEMENTED();
-
-  return STATUS_OK;
-}
-
-
 NotificationDatabase::Status NotificationDatabase::Destroy() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 

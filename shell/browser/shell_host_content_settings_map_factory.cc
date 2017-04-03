@@ -24,7 +24,7 @@ ShellHostContentSettingsMapFactory::ShellHostContentSettingsMapFactory()
   settings_map = new HostContentSettingsMap(
     ShellPrefService::Get(),
     false,
-    true);
+    false);
 
   // syncable_prefs::PrefServiceSyncable* pref_service =
   //     PrefServiceSyncableFromProfile(profile);

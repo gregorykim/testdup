@@ -9,23 +9,12 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/logging.h"
-#include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/platform_notification_service.h"
-#include "content/public/browser/storage_partition.h"
-#include "content/public/common/notification_resources.h"
-#include "content/public/common/platform_notification_data.h"
-#include "content/public/common/push_subscription_options.h"
-#include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_content_browser_client.h"
-#include "content/shell/browser/shell_host_content_settings_map_factory.h"
-#include "content/shell/browser/shell_pref_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_desktop_utils.h"
@@ -37,21 +26,21 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/syncable_prefs/pref_service_syncable.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/platform_notification_service.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/common/notification_resources.h"
+#include "content/public/common/platform_notification_data.h"
+#include "content/public/common/push_subscription_options.h"
+#include "content/shell/browser/shell_browser_context.h"
+#include "content/shell/browser/shell_content_browser_client.h"
+#include "content/shell/browser/shell_host_content_settings_map_factory.h"
+#include "content/shell/browser/shell_pref_service.h"
 
 using instance_id::InstanceID;
 
 namespace {
-
-// The GCM channel's enabled state.
-// const char kGCMChannelStatus[] = "gcm.channel_status";
-
-// The GCM channel's polling interval (in seconds).
-// const char kGCMChannelPollIntervalSeconds[] = "gcm.poll_interval";
-
-// Last time when checking with the GCM channel status server is done.
-// const char kGCMChannelLastCheckTime[] = "gcm.check_time";
-
-// const int kDefaultPollIntervalSeconds = 60 * 60;  // 60 minutes.
 
 const char kPushMessagingAppIdentifierPrefix[] = "wp:";
 const char kInstanceIDGuidSuffix[] = "-V2";
@@ -68,6 +57,12 @@ const char kPushMessagingGcmEndpoint[] =
 
 const char kPushMessagingPushProtocolEndpoint[] =
     "https://fcm.googleapis.com/fcm/send/";
+
+const char kPushMessagingForcedNotificationTag[] =
+    "user_visible_auto_notification";
+
+const char kProductCategoryForSubtypes[] =
+    "com.chrome.qnx";
 
 blink::WebPushPermissionStatus ToPushPermission(
     blink::mojom::PermissionStatus permission_status) {
@@ -124,40 +119,10 @@ content::PushUnregistrationStatus ToUnregisterStatus(
 
 ShellPushMessagingService::ShellPushMessagingService()
     : weak_factory_(this) {
-DLOG(WARNING) << "~~~~~~~~~~~~~~~ShellPushMessagingService create !!";
-  base::SequencedWorkerPool* worker_pool =
-      content::BrowserThread::GetBlockingPool();
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
-      worker_pool->GetSequencedTaskRunnerWithShutdownBehavior(
-          worker_pool->GetSequenceToken(),
-          base::SequencedWorkerPool::SKIP_ON_SHUTDOWN));
-  content::ShellBrowserContext* context = content::ShellContentBrowserClient::Get()->browser_context();
-  base::FilePath path = context->GetPath();
-
-  net::URLRequestContextGetter* context_getter =
-      content::BrowserContext::GetDefaultStoragePartition(context)->
-              GetURLRequestContext();
-  std::string product_category_for_subtypes = "com.chrome.qnx";
-  prefs_.reset(ShellPrefService::Get());
-
-  driver_ = gcm::CreateGCMDriverDesktop(
-      base::WrapUnique(new gcm::GCMClientFactory), prefs_.get(),
-      path.Append(gcm_driver::kGCMStoreDirname), context_getter, version_info::Channel::STABLE,
-      product_category_for_subtypes,
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::UI),
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO),
-      blocking_task_runner);
-  base::ThreadRestrictions::SetIOAllowed(false);
-
+  InitGCMDriver();
 }
 
 ShellPushMessagingService::~ShellPushMessagingService() {
-DLOG(WARNING) << "~~~~~~~~~~~~~~~ShellPushMessagingService destroy !!";
-  // task_runner_->DeleteSoon(FROM_HERE, driver_.release());
-  // if (ShellHostContentSettingsMapFactory::Get())
-  //   ShellHostContentSettingsMapFactory::Get()->ShutdownOnUIThread();
   if (driver_)
     driver_.release();
 }
@@ -172,9 +137,6 @@ void ShellPushMessagingService::ShutdownHandler() {
   // handlers of gcm::GCMDriver so this shouldn't ever been called.
   NOTREACHED();
 }
-
-const char kPushMessagingForcedNotificationTag[] =
-    "user_visible_auto_notification";
 
 void ShellPushMessagingService::OnMessage(const std::string& app_id,
                                          const gcm::IncomingMessage& message) {
@@ -404,4 +366,32 @@ std::string ShellPushMessagingService::GetAppId(
   std::string app_id =
       kPushMessagingAppIdentifierPrefix + requesting_origin.spec() + kSeparator + guid;
   return app_id;
+}
+
+void ShellPushMessagingService::InitGCMDriver() {
+  base::SequencedWorkerPool* worker_pool =
+      content::BrowserThread::GetBlockingPool();
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
+      worker_pool->GetSequencedTaskRunnerWithShutdownBehavior(
+          worker_pool->GetSequenceToken(),
+          base::SequencedWorkerPool::SKIP_ON_SHUTDOWN));
+  content::ShellBrowserContext* context = content::ShellContentBrowserClient::Get()->browser_context();
+  base::FilePath path = context->GetPath();
+
+  net::URLRequestContextGetter* context_getter =
+      content::BrowserContext::GetDefaultStoragePartition(context)->
+              GetURLRequestContext();
+  std::string product_category_for_subtypes = kProductCategoryForSubtypes;
+  prefs_.reset(ShellPrefService::Get());
+
+  driver_ = gcm::CreateGCMDriverDesktop(
+      base::WrapUnique(new gcm::GCMClientFactory), prefs_.get(),
+      path.Append(gcm_driver::kGCMStoreDirname), context_getter, version_info::Channel::STABLE,
+      product_category_for_subtypes,
+      content::BrowserThread::GetTaskRunnerForThread(
+          content::BrowserThread::UI),
+      content::BrowserThread::GetTaskRunnerForThread(
+          content::BrowserThread::IO),
+      blocking_task_runner);
+  base::ThreadRestrictions::SetIOAllowed(false);
 }

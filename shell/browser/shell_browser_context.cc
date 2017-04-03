@@ -22,11 +22,6 @@
 #include "content/shell/common/shell_switches.h"
 #include "content/test/mock_background_sync_controller.h"
 
-#include "content/public/browser/push_messaging_service.h"
-#include "content/shell/browser/shell_push_messaging_service.h"
-#include "content/shell/browser/shell_host_content_settings_map_factory.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-
 #if defined(OS_WIN)
 #include "base/base_paths_win.h"
 #elif defined(OS_LINUX)
@@ -34,6 +29,9 @@
 #elif defined(OS_MACOSX)
 #include "base/base_paths_mac.h"
 #endif
+
+#include "content/public/browser/push_messaging_service.h"
+#include "content/shell/browser/shell_push_messaging_service.h"
 
 namespace content {
 

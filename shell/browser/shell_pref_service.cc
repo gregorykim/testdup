@@ -8,11 +8,11 @@
 
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/syncable_prefs/pref_service_syncable.h"
 #include "components/syncable_prefs/pref_service_syncable_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -20,7 +20,6 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_host_content_settings_map_factory.h"
-
 
 namespace {
 
@@ -33,12 +32,8 @@ const char kGCMChannelPollIntervalSeconds[] = "gcm.poll_interval";
 // Last time when checking with the GCM channel status server is done.
 const char kGCMChannelLastCheckTime[] = "gcm.check_time";
 
-// const char kManagedDefaultContentSettings[] = "profile.managed_default_content_settings.cookies";
-
-// const int kDefaultCookiesSetting = 2;
-
 const int kDefaultPollIntervalSeconds = 60 * 60;  // 60 minutes.
-// const char kExtensionScheme[] = "extensionscheme";
+
 }
 
 ShellPrefService::ShellPrefService() {
@@ -50,29 +45,16 @@ ShellPrefService::ShellPrefService() {
           base::SequencedWorkerPool::SKIP_ON_SHUTDOWN));
   content::ShellBrowserContext* context = content::ShellContentBrowserClient::Get()->browser_context();
   base::FilePath path = context->GetPath();
-  PrefServiceFactory factory;
   path = path.Append("Prefs");
-  factory.SetUserPrefsFile(path, blocking_task_runner.get());
   scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
         new user_prefs::PrefRegistrySyncable);
-
-  // scoped_refptr<PrefRegistrySimple> registry(new PrefRegistrySimple);
 
   registry->RegisterBooleanPref(kGCMChannelStatus, true);
   registry->RegisterIntegerPref(kGCMChannelPollIntervalSeconds, kDefaultPollIntervalSeconds);
   registry->RegisterInt64Pref(kGCMChannelLastCheckTime, 0);
-  // registry->RegisterIntegerPref(kManagedDefaultContentSettings, kDefaultCookiesSetting);
 
   ContentSettingsPattern::SetNonWildcardDomainNonPortScheme(content_settings::kChromeUIScheme);
-  // content_settings::CookieSettings::RegisterProfilePrefs(registry.get());
   HostContentSettingsMap::RegisterProfilePrefs(registry.get());
-
-  prefs_ = factory.Create(registry.get());
-
-  // settings_map_ = new HostContentSettingsMap(
-  //   prefs_.get(),
-  //   false,
-  //   false);
 
   syncable_prefs::PrefServiceSyncableFactory factory_syncable;
   factory_syncable.SetUserPrefsFile(path, blocking_task_runner.get());
@@ -80,16 +62,15 @@ ShellPrefService::ShellPrefService() {
 }
 
 ShellPrefService::~ShellPrefService() {
-  // settings_map_->ShutdownOnUIThread();
-  if (prefs_)
-    prefs_.release();
+  if (prefs_syncable_)
+    prefs_syncable_.release();
 }
 
 // static
 PrefService* ShellPrefService::Get() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
-  return GetInstance()->prefs_.get();
+  PrefService* prefs = GetInstance()->prefs_syncable_.get();
+  return const_cast<PrefService*>(prefs);
 }
 
 // static

@@ -62,22 +62,7 @@ class ShellPermissionManager : public PermissionManager ,
                                          const GURL req_url) override;
   void Closing() override;
 
-
-
  private:
-
-  void LazyInitialize();
-  void OpenDatabase();
-  void ReadDBOnIO();
-  void ReadDBOnUI();
-  void WriteDBOnIO(const GURL& requesting_origin, std::string permission);
-  void DestryDBOnIO();
-
-
-
-  base::FilePath path_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   std::unique_ptr<Permission_prompt::PermissionPromptImpl> ask_popup_;
   std::unique_ptr<NotificationDatabase> database_;
   std::map<std::string, std::string> notification_permission_vector_;
