@@ -54,8 +54,11 @@
 #include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"
 #endif
 
+#if 1 //defined(OS_QNX)
+// [WEB_PUSH] Push messaging
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/shell/browser/shell_host_content_settings_map_factory.h"
+#endif
 
 namespace content {
 
@@ -190,9 +193,11 @@ void ShellBrowserMainParts::PreMainMessageLoopRun() {
   ShellDevToolsManagerDelegate::StartHttpHandler(browser_context_.get());
   InitializeMessageLoopContext();
 
-  // Init PermissionManager, ShellHostContentSettingsMapFactory
+#if 1 //defined(OS_QNX)
+  // [WEB_PUSH] Initialize PermissionManager, ShellHostContentSettingsMapFactory
   ShellHostContentSettingsMapFactory::Get();
   browser_context_->GetPermissionManager();
+#endif
 
   if (parameters_.ui_task) {
     parameters_.ui_task->Run();
@@ -208,8 +213,10 @@ bool ShellBrowserMainParts::MainMessageLoopRun(int* result_code)  {
 void ShellBrowserMainParts::PostMainMessageLoopRun() {
   ShellDevToolsManagerDelegate::StopHttpHandler();
 
-  // Destroy ShellHostContentSettingsMapFactory
+#if 1 //defined(OS_QNX)
+  // [WEB_PUSH] Destroy ShellHostContentSettingsMapFactory
   ShellHostContentSettingsMapFactory::Get()->ShutdownOnUIThread();
+#endif
 
   browser_context_.reset();
   off_the_record_browser_context_.reset();

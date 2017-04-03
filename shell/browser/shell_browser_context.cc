@@ -30,8 +30,11 @@
 #include "base/base_paths_mac.h"
 #endif
 
+#if 1 //defined(OS_QNX)
+// Push messaging
 #include "content/public/browser/push_messaging_service.h"
 #include "content/shell/browser/shell_push_messaging_service.h"
+#endif
 
 namespace content {
 
@@ -196,9 +199,12 @@ storage::SpecialStoragePolicy* ShellBrowserContext::GetSpecialStoragePolicy() {
 }
 
 PushMessagingService* ShellBrowserContext::GetPushMessagingService() {
+#if 1 //defined(OS_QNX)
+  // [WEB_PUSH] Push messaging
   if (!push_messaging_service_.get())
     push_messaging_service_.reset(new ShellPushMessagingService());
   return push_messaging_service_.get();
+#endif
   return NULL;
 }
 

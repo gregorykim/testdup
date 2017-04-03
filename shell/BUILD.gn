@@ -367,33 +367,36 @@ static_library("content_shell_lib") {
     ]
   }
 
-  #qnx
 
-  sources += [
-    "browser/shell_push_messaging_service.cc",
-    "browser/shell_push_messaging_service.h",
-    "browser/shell_pref_service.cc",
-    "browser/shell_pref_service.h",
-    "browser/shell_host_content_settings_map_factory.cc",
-    "browser/shell_host_content_settings_map_factory.h",
-  ]
-  # QNX
-  sources += [
-    "browser/notifications/platform_notification_service_impl.cc",
-    "browser/notifications/platform_notification_service_impl.h",
-    "browser/notifications/permission_prompt_impl.cc",
-    "browser/notifications/permission_prompt_impl.h",
-    "browser/notifications/web_push_content_views.cc",
-    "browser/notifications/web_push_content_views.h",
-    "browser/notifications/notification.cc",
-    "browser/notifications/notification.h",
-    "browser/notifications/website_settings_ui.h",
-  ]
-  deps += [
-    "//components/gcm_driver",
-    "//components/keyed_service/content",
-    "//components/syncable_prefs"
-  ]
+  #if (is_qnx) {
+    # [WEB_PUSH] Web notification and push messaging feature
+    sources += [
+      "browser/shell_push_messaging_service.cc",
+      "browser/shell_push_messaging_service.h",
+      "browser/shell_pref_service.cc",
+      "browser/shell_pref_service.h",
+      "browser/shell_host_content_settings_map_factory.cc",
+      "browser/shell_host_content_settings_map_factory.h",
+    ]
+
+    sources += [
+      "browser/notifications/platform_notification_service_impl.cc",
+      "browser/notifications/platform_notification_service_impl.h",
+      "browser/notifications/permission_prompt_impl.cc",
+      "browser/notifications/permission_prompt_impl.h",
+      "browser/notifications/web_push_content_views.cc",
+      "browser/notifications/web_push_content_views.h",
+      "browser/notifications/notification.cc",
+      "browser/notifications/notification.h",
+      "browser/notifications/website_settings_ui.h",
+    ]
+
+    deps += [
+      "//components/gcm_driver",
+      "//components/keyed_service/content",
+      "//components/syncable_prefs"
+    ]
+  #}
 }
 
 grit("content_shell_resources_grit") {

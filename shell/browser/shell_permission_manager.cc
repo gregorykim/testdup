@@ -10,21 +10,23 @@
 #include "content/public/common/content_switches.h"
 #include "media/base/media_switches.h"
 
-#include "content/public/browser/browser_thread.h"
-#include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_content_browser_client.h"
+#if 1 // defined(OS_QNX)
+// [WEB_PUSH] Using content settings
 #include "content/shell/browser/shell_host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#endif
 
 namespace content {
 
 namespace {
 
 bool IsWhitelistedPermissionType(PermissionType permission) {
-  DLOG(WARNING) << __FILE__ <<":"<<__LINE__;
   return permission == PermissionType::GEOLOCATION ||
+#if 1 //defined(OS_QNX)
+         // [WEB_PUSH] Using push messaging
          permission == PermissionType::PUSH_MESSAGING ||
+#endif
          permission == PermissionType::MIDI;
 }
 
@@ -37,6 +39,8 @@ ShellPermissionManager::ShellPermissionManager()
 ShellPermissionManager::~ShellPermissionManager() {
 }
 
+#if 1 //defined(OS_QNX)
+// [WEB_PUSH] Web notification permission setting
 void ShellPermissionManager::Accept(const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
 									   const GURL req_url)
 {
@@ -65,10 +69,7 @@ void ShellPermissionManager::Deny(const base::Callback<void(blink::mojom::Permis
               std::string(), dummy_result);
 
     std::string setting_str = content_settings::ContentSettingToString(dummy_result);
-    // write db
-    // task_runner_->PostTask(
-    //     FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
-    //                           base::Unretained(this), req_url, setting_str));
+
     callback.Run(blink::mojom::PermissionStatus::DENIED);
 #endif
 }
@@ -77,6 +78,7 @@ void ShellPermissionManager::Closing()
 {
     DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
 }
+#endif
 
 int ShellPermissionManager::RequestPermission(
     PermissionType permission,
@@ -84,6 +86,8 @@ int ShellPermissionManager::RequestPermission(
     const GURL& requesting_origin,
     bool user_gesture,
     const base::Callback<void(blink::mojom::PermissionStatus)>& callback) {
+#if 1 //defined(OS_QNX)
+// [WEB_PUSH] Request web notification permission
   DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
 #if 0
 return RequestPermissions(
@@ -108,6 +112,12 @@ return RequestPermissions(
   }
   return kNoPendingOperation;
 #endif
+#else
+  callback.Run(IsWhitelistedPermissionType(permission)
+                   ? blink::mojom::PermissionStatus::GRANTED
+                   : blink::mojom::PermissionStatus::DENIED);
+  return kNoPendingOperation;
+#endif // defined(OS_QNX)
 }
 
 int ShellPermissionManager::RequestPermissions(
@@ -117,8 +127,6 @@ int ShellPermissionManager::RequestPermissions(
     bool user_gesture,
     const base::Callback<
         void(const std::vector<blink::mojom::PermissionStatus>&)>& callback) {
-
-  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
   std::vector<blink::mojom::PermissionStatus> result(permissions.size());
   for (const auto& permission : permissions) {
     result.push_back(IsWhitelistedPermissionType(permission)
@@ -130,21 +138,18 @@ int ShellPermissionManager::RequestPermissions(
 }
 
 void ShellPermissionManager::CancelPermissionRequest(int request_id) {
-  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
 }
 
 void ShellPermissionManager::ResetPermission(
     PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
 }
 
 blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
     PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
   // Background sync browser tests require permission to be granted by default.
   // TODO(nsatragno): add a command line flag so that it's only granted for
   // tests.
@@ -158,9 +163,12 @@ blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
       command_line->HasSwitch(switches::kUseFakeUIForMediaStream)) {
     return blink::mojom::PermissionStatus::GRANTED;
   }
+#if 1 //defined(OS_QNX)
+// [WEB_PUSH] Web notification permission
   if (permission == PermissionType::NOTIFICATIONS) {
     return blink::mojom::PermissionStatus::GRANTED;
   }
+#endif
   return blink::mojom::PermissionStatus::DENIED;
 }
 

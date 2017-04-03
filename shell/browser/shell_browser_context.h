@@ -106,8 +106,11 @@ class ShellBrowserContext : public BrowserContext {
   bool ignore_certificate_errors_;
   std::unique_ptr<ShellDownloadManagerDelegate> download_manager_delegate_;
   std::unique_ptr<PermissionManager> permission_manager_;
-  std::unique_ptr<PushMessagingService> push_messaging_service_;
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
+#if 1 //defined(OS_QNX)
+  // [WEB_PUSH] Push messaging
+  std::unique_ptr<PushMessagingService> push_messaging_service_;
+#endif
 
  private:
   // Performs initialization of the ShellBrowserContext while IO is still

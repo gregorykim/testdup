@@ -9,13 +9,19 @@
 #include "base/macros.h"
 #include "content/public/browser/permission_manager.h"
 
-#include "content/browser/notifications/notification_database.h"
+#if 1 //defined(OS_QNX)
+// [WEB_PUSH] Web notification permission
 #include "content/shell/browser/notifications/permission_prompt_impl.h"
+#endif
 
 namespace content {
 
-class ShellPermissionManager : public PermissionManager ,
-										Permission_prompt::Delegate {
+class ShellPermissionManager : public PermissionManager
+#if 1 //defined(OS_QNX)
+// [WEB_PUSH] Web notification permission UI
+                              ,Permission_prompt::Delegate
+#endif
+{
  public:
   ShellPermissionManager();
   ~ShellPermissionManager() override;
@@ -55,17 +61,21 @@ class ShellPermissionManager : public PermissionManager ,
       override;
   void UnsubscribePermissionStatusChange(int subscription_id) override;
 
-///delegate
+#if 1 //defined(OS_QNX)
+// [WEB_PUSH] Web notification permission UI delegate
   void Accept(const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
                                          const GURL req_url) override;
   void Deny(const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
                                          const GURL req_url) override;
   void Closing() override;
+#endif
 
  private:
+#if 1 // defined(OS_QNX)
+// [WEB_PUSH] Web notification permission UI
   std::unique_ptr<Permission_prompt::PermissionPromptImpl> ask_popup_;
-  std::unique_ptr<NotificationDatabase> database_;
   std::map<std::string, std::string> notification_permission_vector_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(ShellPermissionManager);
 };
