@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_SHELL_BROWSER_NOTIFICATION_WEB_PUSH_CONTENT_VIEWS_H_
-#define CONTENT_SHELL_BROWSER_NOTIFICATION_WEB_PUSH_CONTENT_VIEWS_H_
+#ifndef CONTENT_SHELL_BROWSER_NOTIFICATIONS_WEB_PUSH_CONTENT_VIEWS_H_
+#define CONTENT_SHELL_BROWSER_NOTIFICATIONS_WEB_PUSH_CONTENT_VIEWS_H_
 
 #include <string>
 #include <vector>
@@ -47,23 +47,33 @@
 
 #include "ui/gfx/native_widget_types.h"
 
+#include "content/public/browser/desktop_notification_delegate.h"
+
+
 namespace WebPushView {
 class WebPushContentViews;
 class WebPushViewRequest {
 public:
     WebPushViewRequest();
 
-    WebPushViewRequest(base::string16 title,base::string16 message );
+
+    WebPushViewRequest(std::unique_ptr<content::DesktopNotificationDelegate> delegate,
+                                   base::string16 title, 
+                                   base::string16 message );
+    ~WebPushViewRequest();
     void Add();
     void DisplayWebPush();
-    void finalizeWebPush();
+    void finalizeWebPush() const;
+
 private:
 	base::string16 title_;
 	base::string16 message_;
 	
     views::Widget* window_widget_;
-//    gfx::NativeWindow window_;
-    WebPushContentViews* delegate_;
+
+    WebPushContentViews* content_view_;
+
+    std::unique_ptr<content::DesktopNotificationDelegate> delegate_;
 };
 
 class WebPushContentViews : public views::WidgetDelegateView,
@@ -74,7 +84,7 @@ public:
 	  WebPushContentViews();
 	  WebPushContentViews(const WebPushViewRequest* req);
       void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
+  const WebPushViewRequest* getReq() const {return request_;}
   void CreateWidget();
   void SetWebPushMessage(const base::string16& msg);
   void SetWebPushTitle(const base::string16& title);
@@ -83,6 +93,9 @@ public:
   
 private:
 
+  const WebPushViewRequest* request_;
+
+    
   base::string16 title_;
   base::string16 meesage_;
 
@@ -95,4 +108,4 @@ private:
 
 } ; 
 }// namespace WebPushView
-#endif  // CONTENT_SHELL_BROWSER_NOTIFICATION_WEB_PUSH_CONTENT_VIEWS_H_
+#endif  // CONTENT_SHELL_BROWSER_NOTIFICATIONS_WEB_PUSH_CONTENT_VIEWS_H_
