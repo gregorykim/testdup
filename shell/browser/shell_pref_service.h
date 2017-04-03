@@ -12,6 +12,7 @@
 class PrefService;
 class HostContentSettingsMap;
 class PrefServiceSyncable;
+
 namespace syncable_prefs {
 class PrefServiceSyncable;
 }
@@ -21,7 +22,6 @@ class ShellPrefService {
   static PrefService* Get();
   static syncable_prefs::PrefServiceSyncable* GetSyncable();
   static ShellPrefService* GetInstance();
-  // static HostContentSettingsMap* GetHostContentSettingsMapFactory();
 
  private:
   friend struct base::DefaultSingletonTraits<ShellPrefService>;
@@ -29,8 +29,6 @@ class ShellPrefService {
   ShellPrefService();
   ~ShellPrefService();
 
-  std::unique_ptr<PrefService> prefs_;
-  // scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<syncable_prefs::PrefServiceSyncable> prefs_syncable_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellPrefService);

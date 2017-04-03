@@ -32,69 +32,10 @@ bool IsWhitelistedPermissionType(PermissionType permission) {
 
 ShellPermissionManager::ShellPermissionManager()
     : PermissionManager() {
-  path_ = ShellContentBrowserClient::Get()->browser_context()->GetPath();
-  path_ = path_.Append("Permission");
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
-      base::Bind(&ShellPermissionManager::LazyInitialize, base::Unretained(this)));
 }
 
 ShellPermissionManager::~ShellPermissionManager() {
-  task_runner_->DeleteSoon(FROM_HERE, database_.release());
 }
-
-void ShellPermissionManager::LazyInitialize() {
-  if (!task_runner_) {
-    base::SequencedWorkerPool* pool = BrowserThread::GetBlockingPool();
-    base::SequencedWorkerPool::SequenceToken token = pool->GetSequenceToken();
-
-    task_runner_ = pool->GetSequencedTaskRunner(token);
-  }
-
-  task_runner_->PostTask(
-      FROM_HERE, base::Bind(&ShellPermissionManager::OpenDatabase,
-                            base::Unretained(this)));
-}
-
-void ShellPermissionManager::OpenDatabase() {
-  NotificationDatabase::Status status;
-  if (database_ == NULL) {
-    database_.reset(new NotificationDatabase(path_));
-    status = database_->Open(true /* create_if_missing */);
-  }
-  ReadDBOnIO();
-}
-
-void ShellPermissionManager::ReadDBOnIO() {
-  NotificationDatabase::Status status;
-  status = database_->ReadNotificationPermission(&notification_permission_vector_);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
-      base::Bind(&ShellPermissionManager::ReadDBOnUI, base::Unretained(this)));
-}
-
-void ShellPermissionManager::ReadDBOnUI() {
-  for(auto &permission : notification_permission_vector_) {
-    ContentSetting setting;
-    content_settings::ContentSettingFromString(permission.second, &setting);
-    ShellHostContentSettingsMapFactory::Get()->SetContentSettingDefaultScope(
-              GURL(permission.first), GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
-              std::string(), setting);
-  }
-}
-
-void ShellPermissionManager::WriteDBOnIO(const GURL& requesting_origin, std::string permission) {
-  NotificationDatabase::Status status;
-  status = database_->WriteNotificationPermission(requesting_origin, permission);
-}
-
-void ShellPermissionManager::DestryDBOnIO() {
-  if (database_ != NULL) {
-    database_->Destroy();
-    database_.reset();
-  }
-}
-
 
 void ShellPermissionManager::Accept(const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
 									   const GURL req_url)
@@ -108,13 +49,11 @@ void ShellPermissionManager::Accept(const base::Callback<void(blink::mojom::Perm
               std::string(), dummy_result);
 
     std::string setting_str = content_settings::ContentSettingToString(dummy_result);
-    // write db
-    task_runner_->PostTask(
-        FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
-                              base::Unretained(this), req_url, setting_str));
+
     callback.Run(blink::mojom::PermissionStatus::GRANTED);
 #endif
 }
+
 void ShellPermissionManager::Deny(const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
 									 const GURL req_url)
 {
@@ -127,9 +66,9 @@ void ShellPermissionManager::Deny(const base::Callback<void(blink::mojom::Permis
 
     std::string setting_str = content_settings::ContentSettingToString(dummy_result);
     // write db
-    task_runner_->PostTask(
-        FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
-                              base::Unretained(this), req_url, setting_str));
+    // task_runner_->PostTask(
+    //     FROM_HERE, base::Bind(&ShellPermissionManager::WriteDBOnIO,
+    //                           base::Unretained(this), req_url, setting_str));
     callback.Run(blink::mojom::PermissionStatus::DENIED);
 #endif
 }
@@ -138,8 +77,6 @@ void ShellPermissionManager::Closing()
 {
     DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " << __FUNCTION__;
 }
-
-
 
 int ShellPermissionManager::RequestPermission(
     PermissionType permission,

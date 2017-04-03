@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
@@ -19,18 +20,16 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_notification_delegate.h"
 #include "content/public/browser/notification_event_dispatcher.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/permission_manager.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/user_metrics.h"
 #include "content/public/common/notification_resources.h"
 #include "content/public/common/platform_notification_data.h"
+#include "content/shell/browser/notifications/web_push_content_views.h"
+#include "content/shell/browser/shell_host_content_settings_map_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/url_constants.h"
-
-#include "content/shell/browser/shell_host_content_settings_map_factory.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "content/shell/browser/notifications/web_push_content_views.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -88,7 +87,6 @@ PlatformNotificationServiceImpl::CheckPermissionOnUIThread(
     const GURL& origin,
     int render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // NOTIMPLEMENTED();
 
   DCHECK(browser_context);
   DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " <<__FUNCTION__;
@@ -97,10 +95,6 @@ PlatformNotificationServiceImpl::CheckPermissionOnUIThread(
 
   return browser_context->GetPermissionManager()->GetPermissionStatus(
       content::PermissionType::NOTIFICATIONS, origin, origin);
-
-  // return PermissionManager::Get(profile)->GetPermissionStatus(
-  //     content::PermissionType::NOTIFICATIONS, origin, origin);
-  // return blink::mojom::PermissionStatus::GRANTED;
 }
 
 blink::mojom::PermissionStatus
@@ -109,12 +103,9 @@ PlatformNotificationServiceImpl::CheckPermissionOnIOThread(
     const GURL& origin,
     int render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // return browser_context->GetPermissionManager()->GetPermissionStatus(
-  //     content::PermissionType::NOTIFICATIONS, origin, origin);
   ContentSetting setting = ShellHostContentSettingsMapFactory::Get()->GetContentSetting(
               origin, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 
               std::string());
-  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " " <<__FUNCTION__ << " setting: " << setting;
   switch(setting) {
     case CONTENT_SETTING_ALLOW:
       return blink::mojom::PermissionStatus::GRANTED;

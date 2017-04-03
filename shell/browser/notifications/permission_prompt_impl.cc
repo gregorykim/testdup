@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/accessibility/ax_view_state.h"
 #include "ui/base/models/combobox_model.h"
@@ -26,7 +27,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_constants.h"
-#include "base/strings/utf_string_conversions.h"
 
 namespace {
 

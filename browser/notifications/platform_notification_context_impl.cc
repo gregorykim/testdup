@@ -86,7 +86,6 @@ void PlatformNotificationContextImpl::Initialize() {
 void PlatformNotificationContextImpl::InitializeOnIO() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  DLOG(WARNING) << __FILE__ <<":"<<__LINE__ << " service_worker_context_->AddObserver(this) " << __FUNCTION__;
   // |service_worker_context_| may be NULL in tests.
   if (service_worker_context_)
     service_worker_context_->AddObserver(this);

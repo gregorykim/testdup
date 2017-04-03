@@ -5,9 +5,9 @@
 #ifndef CONTENT_SHELL_BROWSER_SHELL_PUSH_MESSAGING_SERVICE_IMPL_H_
 #define CONTENT_SHELL_BROWSER_SHELL_PUSH_MESSAGING_SERVICE_IMPL_H_
 
-#include <stdint.h>
 #include <memory>
 #include <set>
+#include <stdint.h>
 #include <vector>
 
 #include "base/callback.h"
@@ -39,6 +39,7 @@ class HostContentSettingsMap;
 namespace gcm {
 class GCMDriver;
 }
+
 namespace instance_id {
 class InstanceIDDriver;
 }
@@ -97,6 +98,7 @@ class ShellPushMessagingService : public content::PushMessagingService,
     const std::string& sender_info) const;
 
  private:
+  void InitGCMDriver();
   void DidSubscribe(
     const std::string& app_id,
     const std::string& sender_id,
@@ -109,12 +111,6 @@ class ShellPushMessagingService : public content::PushMessagingService,
     content::PushRegistrationStatus status,
     const std::string& p256dh,
     const std::string& auth_secret);
-  // void DidGetEncryptionInfo(
-  //   const std::string& app_id,
-  //   const std::string& sender_id,
-  //   const PushMessagingService::EncryptionInfoCallback& callback,
-  //   const std::string& registration_id,
-  //   gcm::GCMClient::Result result);
   void DidGetEncryptionInfo(
     const PushMessagingService::EncryptionInfoCallback& callback,
     const std::string& p256dh,

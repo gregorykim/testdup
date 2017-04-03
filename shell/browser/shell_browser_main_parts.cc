@@ -54,8 +54,8 @@
 #include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"
 #endif
 
-#include "content/shell/browser/shell_host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/shell/browser/shell_host_content_settings_map_factory.h"
 
 namespace content {
 

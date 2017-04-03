@@ -4,21 +4,18 @@
 
 
 #include "content/shell/browser/notifications/web_push_content_views.h"
-#include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
-#include "ui/views/background.h"
 
-
+#include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/events/event.h"
 #include "ui/display/screen.h"
-#include "base/strings/utf_string_conversions.h"
-
-
+#include "ui/events/event.h"
+#include "ui/views/background.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace WebPushView {
     

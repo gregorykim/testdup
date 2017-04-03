@@ -10,20 +10,18 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "content/public/browser/web_contents.h"
+#include "content/shell/browser/notifications/website_settings_ui.h"
+#include "third_party/WebKit/public/platform/modules/permissions/permission_status.mojom.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/bubble/bubble_border.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
-
-#include "third_party/WebKit/public/platform/modules/permissions/permission_status.mojom.h"
-#include "content/shell/browser/notifications/website_settings_ui.h"
-
-
 
 namespace views {
 class View;
 }
+
 namespace Permission_prompt {
 
 class Delegate {

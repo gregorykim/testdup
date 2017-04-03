@@ -19,10 +19,9 @@
 #include "base/strings/string16.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/common/persistent_notification_status.h"
-#include "third_party/WebKit/public/platform/modules/permissions/permission_status.mojom.h"
-
 #include "content/shell/browser/notifications/notification.h"
 #include "content/shell/browser/notifications/web_push_content_views.h"
+#include "third_party/WebKit/public/platform/modules/permissions/permission_status.mojom.h"
 
 class NotificationDisplayService;
 class ScopedKeepAlive;
