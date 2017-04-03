@@ -38,10 +38,14 @@ private:
 WebPushViewRequest::WebPushViewRequest()
 {
 }
+WebPushViewRequest::~WebPushViewRequest()
+{
+}
 
-WebPushViewRequest::WebPushViewRequest(base::string16 title,base::string16 message )
+WebPushViewRequest::WebPushViewRequest(std::unique_ptr<content::DesktopNotificationDelegate> delegate,base::string16 title,base::string16 message )
 :title_(title),
-message_(message)
+message_(message),
+delegate_(std::move(delegate))
 {
     
 }
@@ -51,12 +55,13 @@ void WebPushViewRequest::Add()
 }
 //void WebPushViewRequest::Layout(){}
 
-void WebPushViewRequest::finalizeWebPush()
+void WebPushViewRequest::finalizeWebPush() const
 {
+    if(delegate_)
+	   delegate_->NotificationClosed();
 }
 void WebPushViewRequest::DisplayWebPush()
 {
-    printf("\033[31;47;2m ROYA!!ERROR!!:%s|%s:%d \033[0m\n", __func__, __FILE__, __LINE__); fflush(NULL);
     gfx::Size default_size(500,200);
     
     window_widget_ = new views::Widget;
@@ -65,29 +70,32 @@ void WebPushViewRequest::DisplayWebPush()
     params.type = views::Widget::InitParams::TYPE_POPUP;
     params.opacity = views::Widget::InitParams::OPAQUE_WINDOW;
 
-    delegate_ = new WebPushContentViews(this);
+    content_view_ = new WebPushContentViews(this);
 
     params.bounds = gfx::Rect(default_size.width(),default_size.height());
     
-    params.delegate = delegate_;
+    params.delegate = content_view_;
     window_widget_->Init(params);
-	delegate_->SetWebPushTitle(message_);
-    delegate_->SetWebPushMessage(message_);
+	content_view_->SetWebPushTitle(message_);
+    content_view_->SetWebPushMessage(message_);
     gfx::NativeWindow window_;
 
 	window_ = window_widget_->GetNativeWindow();
 	window_->GetHost()->Show();
 	window_widget_->Show();
+    if(delegate_)
+	    delegate_->NotificationDisplayed();
+
 
 }
 
 WebPushContentViews::WebPushContentViews(const WebPushViewRequest* req)
-{
-    
+:request_(req)
+{    
 }
 void WebPushContentViews::ButtonPressed(views::Button* sender, const ui::Event& event)
 {
-    printf("\033[30;47;2m ROYA:%s|%s:%d \033[0m\n", __func__, __FILE__, __LINE__); fflush(NULL);
+    getReq()->finalizeWebPush();
     GetWidget()->Close();
 }
 

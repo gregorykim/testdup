@@ -137,7 +137,7 @@ void PlatformNotificationServiceImpl::DisplayNotification(
 					  GURL(notification_data.tag),//orignal url
 					  0);
 
-    WebPushView::WebPushViewRequest* req = new WebPushView::WebPushViewRequest(notification_data.title,notification_data.body);
+    WebPushView::WebPushViewRequest* req = new WebPushView::WebPushViewRequest(std::move(delegate),notification_data.title,notification_data.body);
     req->DisplayWebPush();
   DLOG(WARNING) << "DisplayNotification notification_data.title : " << notification_data.title;
   DLOG(WARNING) << "notification_data.body : " << notification_data.body;
